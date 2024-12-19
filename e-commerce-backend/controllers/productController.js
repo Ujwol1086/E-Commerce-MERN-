@@ -1,13 +1,11 @@
-import path from "path";
 import Product from "./../models/productModel.js";
 import fs from "fs";
-import Category from "../models/categoryModel.js";
 
 const addProduct = async (req, res) =>
 {
     try
     {
-        let { title, price, description, category, image, stock, } = req.body;
+        let { name, price, description, category, image, stock, } = req.body;
 
         if (req.file)
         {
@@ -15,7 +13,7 @@ const addProduct = async (req, res) =>
         }
 
         let newProduct = new Product({
-            title,
+            name,
             price,
             description,
             category,
@@ -31,15 +29,15 @@ const addProduct = async (req, res) =>
 }
 const searchProductByTitle = async (req, res) =>
 {
-    const { title } = req.query;
-    if (!title)
+    const { name } = req.query;
+    if (!name)
     {
-        return res.status(400).json({ message: "Title is required" });
+        return res.status(400).json({ message: "Name is required" });
     }
     try
     {
         const products = await Product.find({
-            title: { $regex: title, $options: "i" },
+            name: { $regex: name, $options: "i" },
         });
         if (products.length == 0)
         {

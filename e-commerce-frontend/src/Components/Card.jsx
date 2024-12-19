@@ -24,7 +24,7 @@ const Card = () => {
     <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {products.map((product) => (
         <div
-          key={product.id}
+          key={product._id}
           className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
         >
           <Link to={`/singleproduct/${product.id}`}>
