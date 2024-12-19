@@ -1,4 +1,3 @@
-import { set } from "mongoose";
 import { useEffect, useState } from "react";
 
 const AdminDashboard = () => {
@@ -57,7 +56,7 @@ const AdminDashboard = () => {
       <div className="flex flex-col md:flex-row">
         <div className="md:w-3/4 p-3">
           <div className="h-12">Create Product</div>
-    
+
           <div className="mb-3">
             <label className="border text-white px-4 block w-full text-center rounded-lg cursor-pointer font-bold py-11">
               {image ? image.name : "Upload Image"}
