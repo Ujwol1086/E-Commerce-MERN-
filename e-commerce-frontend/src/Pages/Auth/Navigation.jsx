@@ -17,9 +17,9 @@ const Navigation = () => {
   const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const loggedInUser = JSON.parse(localStorage.getItem("userInfo"));
+    const loggedInUser = localStorage.getItem("userInfo");
     if (loggedInUser) {
-      setUserInfo(loggedInUser);
+      setUserInfo(JSON.parse(loggedInUser));
     }
   }, []);
 
@@ -78,7 +78,7 @@ const Navigation = () => {
         {userInfo ? (
           <p className="flex items-center transition-transform transform hover:translate-x-2">
             <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
-            <span className="hidden nav-item-name mt-[3rem]">
+            <span className="hidden nav-item-name mt-[3rem] text-white">
               {userInfo.username}
             </span>
           </p>
