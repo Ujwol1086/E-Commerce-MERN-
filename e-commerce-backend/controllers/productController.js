@@ -117,7 +117,7 @@ const fetchProducts = async (req, res) =>
 {
     try
     {
-        const product = await Product.find();
+        const product = await Product.find().populate("category");
         res.json(product);
     } catch (error)
     {

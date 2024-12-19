@@ -12,6 +12,7 @@ import SingleProduct from "./Pages/Products/SingleProduct.jsx";
 import { Provider } from "react-redux";
 import store from "./redux/store.js";
 import SearchProduct from "./Pages/searchProduct.jsx";
+import AdminDashboard from "./Pages/Admin/AdminDashboard.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -23,6 +24,7 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<Cart />} />
       <Route path="/singleproduct/:id" element={<SingleProduct />} />
       <Route path="/search" element={<SearchProduct />} />
+      <Route path="/admin-dashboard" element={<AdminDashboard />} />
     </Route>
   )
 );
