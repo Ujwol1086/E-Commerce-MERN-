@@ -5,7 +5,7 @@ const addProduct = async (req, res) =>
 {
     try
     {
-        let { name, price, description, category, image, stock, } = req.body;
+        let { name, price, description, category, image, stock } = req.body;
 
         if (req.file)
         {
@@ -24,7 +24,7 @@ const addProduct = async (req, res) =>
         res.send(newProduct);
     } catch (e)
     {
-        res.sendStatus(400).json({ message: e.message });
+        res.status(400).json({ message: e.message });
     }
 }
 const searchProductByTitle = async (req, res) =>
