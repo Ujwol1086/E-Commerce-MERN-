@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: String,
         required: true,
-        default: false
+        enum: ["user", "admin"],
+        default: "user"
     },
 }, { timestamps: true });
 
