@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isAdmin: {
+    // to check whether the user is admin or not
+    role: {
         type: String,
         required: true,
         enum: ["user", "admin"],

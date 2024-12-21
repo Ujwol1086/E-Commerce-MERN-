@@ -20,7 +20,7 @@ const checkAdminModels = async (req, res, next) =>
             return res.status(404).json({ message: "User not found" });
         }
 
-        if (user.isAdmin == "admin")
+        if (user.role == "admin")
         {
             next();
         } else

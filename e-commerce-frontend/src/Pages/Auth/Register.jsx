@@ -1,6 +1,47 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register = () => {
+  const [userInfo, setUserInfo] = useState("");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const registerUser = async (e) => {
+    e.preventDefault();
+    if (!username || !email || !password || !confirmPassword) {
+      toast.error("All Fields are Required");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, email, password, confirmPassword }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        toast.success("User Registration Successful");
+        setUserInfo(data);
+      }
+    } catch (err) {
+      toast.error("User Registration Failed", err.message);
+      console.log(err.message);
+    }
+  };
+
   return (
     <section className="pl-[10rem] flex flex-wrap">
       <div className="flex">
@@ -9,7 +50,7 @@ const Register = () => {
             Register
           </h1>
 
-          <form className="container w-[30rem]">
+          <form className="container w-[30rem]" onSubmit={registerUser}>
             <div className="my-[2rem]">
               <label
                 htmlFor="name"
@@ -22,6 +63,8 @@ const Register = () => {
                 id="name"
                 className="mt-1 p-2 border rounded w-full bg-gray-600 text-white"
                 placeholder="Enter name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
               />
             </div>
 
@@ -37,6 +80,8 @@ const Register = () => {
                 id="email"
                 className="mt-1 p-2 border rounded w-full bg-gray-600 text-white"
                 placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -52,6 +97,8 @@ const Register = () => {
                 id="password"
                 className="mt-1 p-2 border rounded w-full bg-gray-600 text-white"
                 placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
 
@@ -67,6 +114,8 @@ const Register = () => {
                 id="confirmPassword"
                 className="mt-1 p-2 border rounded w-full bg-gray-600 text-white"
                 placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
 
@@ -93,6 +142,7 @@ const Register = () => {
           className="h-[100vh] w-[59%] xl:block md:hidden sm:hidden rounded-lg"
         />
       </div>
+      <ToastContainer />
     </section>
   );
 };

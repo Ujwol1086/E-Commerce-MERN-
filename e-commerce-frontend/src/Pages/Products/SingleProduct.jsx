@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
+import { toast, ToastContainer } from "react-toastify";
+
 const SingleProduct = () => {
   // To Initialize as an object use "useState({})" and to initialize as an array use "useState([])"
   const [product, setProduct] = useState({});
@@ -10,13 +12,14 @@ const SingleProduct = () => {
   const navigate = useNavigate();
   const addToCartHandler = () => {
     dispatch(addToCart(product));
-    // navigate("/cart");
   };
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/product/${id}`);
+        const res = await fetch(`http://localhost:5000/api/product/${id}`, {
+          method: "GET",
+        });
         const data = await res.json();
         setProduct(data);
       } catch (error) {
