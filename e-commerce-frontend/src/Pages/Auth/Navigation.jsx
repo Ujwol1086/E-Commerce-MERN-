@@ -7,7 +7,7 @@ import {
   AiOutlineShoppingCart,
   AiOutlineUser,
 } from "react-icons/ai";
-import { MdAdminPanelSettings } from "react-icons/md";
+import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
 import { FaRegHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Navigation.css";
@@ -18,7 +18,7 @@ const Navigation = ({ userInfo }) => {
 
   const handleLogOut = async () => {
     localStorage.removeItem("userInfo");
-    window.location.href = "/";
+    window.location.href = "/login";
   };
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
@@ -74,14 +74,24 @@ const Navigation = ({ userInfo }) => {
       <div>
         {userInfo ? (
           <div className="flex flex-col">
-            <p className="flex items-center ">
-              <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
-              <span className="hidden nav-item-name mt-[3rem] text-white">
-                {userInfo.username}
-              </span>
-            </p>
-            <button onClick={handleLogOut} className="hidden nav-item-name">
-              Log Out
+            {userInfo.role === "admin" ? (
+              <p className="flex items-center">
+                <MdAdminPanelSettings className="mr-2 mt-[3rem]" size={26} />
+                <span className="hidden nav-item-name mt-[3rem] text-white">
+                  {userInfo.username} (Admin)
+                </span>
+              </p>
+            ) : (
+              <p className="flex items-center">
+                <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
+                <span className="hidden nav-item-name mt-[3rem] text-white">
+                  {userInfo.username}
+                </span>
+              </p>
+            )}
+            <button onClick={handleLogOut} className="flex items-center">
+              <MdLogout className="mr-2 mt-[2rem]" />
+              <span className="hidden nav-item-name mt-[2rem]">Log Out</span>
             </button>
           </div>
         ) : (

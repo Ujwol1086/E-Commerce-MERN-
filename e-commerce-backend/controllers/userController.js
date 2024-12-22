@@ -77,7 +77,8 @@ const loginUser = async (req, res) =>
             token,
             id: existingUser._id,
             username: existingUser.username,
-            email: existingUser.email
+            email: existingUser.email,
+            role: existingUser.role
         })
     } catch (error)
     {
