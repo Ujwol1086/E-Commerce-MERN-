@@ -12,17 +12,14 @@ import { FaRegHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Navigation.css";
 
-const Navigation = () => {
+const Navigation = ({ userInfo }) => {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
+  // const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("userInfo");
-    if (loggedInUser) {
-      setUserInfo(JSON.parse(loggedInUser));
-    }
-  }, []);
-
+  const handleLogOut = async () => {
+    localStorage.removeItem("userInfo");
+    window.location.href = "/";
+  };
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
@@ -76,12 +73,17 @@ const Navigation = () => {
 
       <div>
         {userInfo ? (
-          <p className="flex items-center transition-transform transform hover:translate-x-2">
-            <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
-            <span className="hidden nav-item-name mt-[3rem] text-white">
-              {userInfo.username}
-            </span>
-          </p>
+          <div className="flex flex-col">
+            <p className="flex items-center ">
+              <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
+              <span className="hidden nav-item-name mt-[3rem] text-white">
+                {userInfo.username}
+              </span>
+            </p>
+            <button onClick={handleLogOut} className="hidden nav-item-name">
+              Log Out
+            </button>
+          </div>
         ) : (
           <ul>
             <li>

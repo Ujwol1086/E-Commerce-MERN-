@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
-  const [userInfo, setUserInfo] = useState(null);
+  // const [userInfo, setUserInfo] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  const { setUserInfo } = useOutletContext();
 
   const handleLogin = async (e) => {
     e.preventDefault();
