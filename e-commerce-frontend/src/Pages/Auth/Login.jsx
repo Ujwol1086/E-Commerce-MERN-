@@ -9,17 +9,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const toastMessage = localStorage.getItem("toastMessage");
-    if (toastMessage) {
-      toast.success(toastMessage); // Display the toast
-      localStorage.removeItem("toastMessage"); // Clear the message to avoid repeated notifications
-    }
-    if (userInfo) {
-      navigate("/"); // Redirect only after user info is set
-    }
-  }, [userInfo, navigate]);
-
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -37,7 +26,6 @@ const Login = () => {
       }
       const data = await response.json();
       localStorage.setItem("userInfo", JSON.stringify(data));
-      localStorage.setItem("toastMessage", "Login Successful");
       setUserInfo(data); // Set user info for state management
       navigate("/"); // Redirect to the homepage
       toast.success("Login Successful");

@@ -32,9 +32,20 @@ const Register = () => {
       });
 
       const data = await res.json();
+
+      if (res.status === 400 && res.message === "User already exists") {
+        toast.error("User already exists");
+      }
+
       if (res.ok) {
         toast.success("User Registration Successful");
         setUserInfo(data);
+
+        //resetting the states
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
       }
     } catch (err) {
       toast.error("User Registration Failed", err.message);

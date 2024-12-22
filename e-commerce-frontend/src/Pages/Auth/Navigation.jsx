@@ -8,7 +8,7 @@ import {
   AiOutlineUser,
 } from "react-icons/ai";
 import { MdAdminPanelSettings } from "react-icons/md";
-import { FaHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Navigation.css";
 
@@ -68,7 +68,7 @@ const Navigation = () => {
           to="/favorite"
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
-          <FaHeart className="mr-2 mt-[3rem]" size={26} />
+          <FaRegHeart className="mr-2 mt-[3rem]" size={26} />
           <span className="hidden nav-item-name mt-[3rem]">Favorite</span>
           {""}
         </Link>
