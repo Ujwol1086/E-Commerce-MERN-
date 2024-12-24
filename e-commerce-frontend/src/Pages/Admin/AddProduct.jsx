@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AddProduct = () => {
   const [categories, setCategories] = useState([]);
@@ -43,11 +45,12 @@ const AddProduct = () => {
         setQuantity("");
         setCategory("");
         setImage(null);
+        toast.success("Product added successfully");
       } else {
-        alert("Failed to add Product");
+        toast.error("Failed to add Product");
       }
     } catch {
-      alert("Error");
+      toast.error("Error");
     }
   };
 

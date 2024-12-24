@@ -29,18 +29,18 @@ const Card = () => {
         >
           <Link to={`/singleproduct/${product.id}`}>
             <img
-              className="p-8 rounded-t-lg"
+              className="w-full h-60 rounded-t-lg object-cover"
               src={`http://localhost:5000/${product.productImage}`}
               alt={product.name}
             />
           </Link>
-          <div className="px-5 pb-5">
+          <div className="p-2">
             <Link to={`/singleproduct/${product.id}`}>
               <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                {product.title}
+                {product.name}
               </h5>
             </Link>
-            <div className="flex items-center mt-2.5 mb-4">
+            <div className="flex items-center mt-2 mb-4">
               <span className="font-medium text-gray-500 dark:text-gray-400">
                 {product.category.name}
               </span>
@@ -50,7 +50,7 @@ const Card = () => {
                 ${product.price}
               </span>
               <Link
-                to={`/singleproduct/${product.id}`}
+                to={`/singleproduct/${product._id}`}
                 className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               >
                 View Product

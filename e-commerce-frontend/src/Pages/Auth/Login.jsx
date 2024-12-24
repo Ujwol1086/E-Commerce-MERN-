@@ -98,16 +98,6 @@ const Login = () => {
         alt=""
         className="h-[100vh] w-[53%] xl:block md:hidden sm:hidden rounded-lg"
       />
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar
-        newestOnTop
-        closeOnClick
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
     </div>
   );
 };

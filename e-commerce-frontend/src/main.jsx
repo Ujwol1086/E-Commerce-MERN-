@@ -13,6 +13,9 @@ import { Provider } from "react-redux";
 import store from "./redux/store.js";
 import SearchProduct from "./Pages/searchProduct.jsx";
 import AddProduct from "./Pages/Admin/AddProduct.jsx";
+import Order from "./Pages/Order/Order.jsx";
+import AllUsers from "./Pages/Admin/AllUsers.jsx";
+import AllProducts from "./Pages/Admin/AllProducts.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -25,6 +28,9 @@ const router = createBrowserRouter(
       <Route path="/singleproduct/:id" element={<SingleProduct />} />
       <Route path="/search" element={<SearchProduct />} />
       <Route path="/addproduct" element={<AddProduct />} />
+      <Route path="/order" element={<Order />} />
+      <Route path="/alluser" element={<AllUsers />} />
+      <Route path="/allproduct" element={<AllProducts />} />
     </Route>
   )
 );

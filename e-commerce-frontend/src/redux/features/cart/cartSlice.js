@@ -23,7 +23,12 @@ const cartSlice = createSlice({
                 state.cartItems.push({ ...action.payload, quantity: 1 });
             }
         },
-        resetCart: (state) => (state = initialState),
+        resetCart: (state) =>
+        {
+            state.cartItems = [];
+            state.cartTotalQuantity = 0;
+            state.cartTotalAmount = 0;
+        },
     }
 })
 export const { addToCart, resetCart } = cartSlice.actions;

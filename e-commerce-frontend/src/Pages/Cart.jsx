@@ -26,7 +26,14 @@ const Cart = () => {
             <tbody className="text-center">
               {cartItems.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.title}</td>
+                  <td className="flex items-center gap-2">
+                    <img
+                      src={`http://localhost:5000/${item.productImage}`}
+                      className="w-10"
+                      alt=""
+                    />
+                    {item.name}
+                  </td>
                   <td>${item.price}</td>
                   <td>{item.quantity}</td>
                   <td>${item.price * item.quantity}</td>
