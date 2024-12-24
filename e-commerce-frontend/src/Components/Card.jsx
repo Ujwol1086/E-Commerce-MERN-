@@ -30,7 +30,7 @@ const Card = () => {
           <Link to={`/singleproduct/${product.id}`}>
             <img
               className="p-8 rounded-t-lg"
-              src={product.image}
+              src={`http://localhost:5000/${product.productImage}`}
               alt={product.name}
             />
           </Link>

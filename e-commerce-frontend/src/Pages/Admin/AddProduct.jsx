@@ -66,7 +66,7 @@ const AddProduct = () => {
                 name="image"
                 accept="image/*"
                 className={!image ? "hidden" : "text-white"}
-                onChange={(e) => setImage(e.target.files)}
+                onChange={(e) => setImage(e.target.files[0])}
               />
             </label>
           </div>

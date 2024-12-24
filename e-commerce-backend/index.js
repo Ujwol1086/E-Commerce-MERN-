@@ -22,7 +22,7 @@ app.use(cookieParser());
 let allowedOrigins = ["http://localhost:5173"];
 app.use(cors(allowedOrigins));
 
-app.use(express.static(path.join(path.resolve(), "/uploads")));
+app.use('/uploads', express.static(path.join('uploads')));
 
 //Routes
 app.get("/", (req, res) =>

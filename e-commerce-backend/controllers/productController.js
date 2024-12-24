@@ -9,7 +9,7 @@ const addProduct = async (req, res) =>
 
         if (req.file)
         {
-            image = req.file.path;
+            image = req.file.path.replace(/\\/g, "/");
         }
 
         let newProduct = new Product({
