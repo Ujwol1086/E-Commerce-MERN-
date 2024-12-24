@@ -14,11 +14,11 @@ const orderSchema = new mongoose.Schema(
         },
         purchase_order_id: {
             type: String,
-            required: true,
+            required: false,
         },
         payment_token: {
             type: String,
-            required: true,
+            required: false,
         },
     },
     { timestamps: true }

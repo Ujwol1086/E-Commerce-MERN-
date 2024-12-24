@@ -2,7 +2,12 @@ import axios from "axios";
 import Order from "../models/orderModel.js";
 import orderItem from "../models/orderItemModel.js";
 import Product from "../models/productModel.js"
-import { JsonWebTokenError } from "jsonwebtoken";
+import UserToken from "../models/usertokenModel.js";
+import jwt from "jsonwebtoken";
+import User from "../models/userModel.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const initializePayment = async (req, res) =>
 {
@@ -17,9 +22,13 @@ export const initializePayment = async (req, res) =>
         }
         const decoded = jwt.verify(token, process.env.JWT);
         const user = await User.findById(decoded.id);
+        if (!user)
+        {
+            return res.status(404).json({ message: "User not found" });
+        }
 
         const {
-            items,
+            product,
             firstName,
             lastName,
             email,
@@ -32,7 +41,7 @@ export const initializePayment = async (req, res) =>
         let totalAmount = 0;
         const orderItems = [];
 
-        for (const item of items)
+        for (const item of product)
         {
             const product = await Product.findById(item.product);
             if (!product)
@@ -59,7 +68,7 @@ export const initializePayment = async (req, res) =>
 
             totalAmount *= 100;
             const neworder = new Order({
-                user: req.user._id,
+                user: user,
                 paymentStatus: "pending",
                 purchase_order_id: `Order-${new Date().getTime()}`,
                 payment_token: "",
