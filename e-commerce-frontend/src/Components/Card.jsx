@@ -11,7 +11,9 @@ const Card = () => {
         const category = await fetch("http://localhost:5000/api/category");
         const categoryData = await category.json();
         const data = await res.json();
-        setProducts(categoryData && data);
+        //sort product randomly
+        const shuffledProduct = data.sort(() => 0.5 - Math.random());
+        setProducts(categoryData && shuffledProduct);
       } catch (error) {
         console.log(error);
       }
@@ -21,15 +23,15 @@ const Card = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {products.map((product) => (
         <div
           key={product._id}
-          className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+          className="w-full max-w-xs bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden"
         >
           <Link to={`/singleproduct/${product.id}`}>
             <img
-              className="w-full h-60 rounded-t-lg object-cover"
+              className="w-full h-60 rounded-t-lg object-cover hover:scale-105 duration-300"
               src={`http://localhost:5000/${product.productImage}`}
               alt={product.name}
             />

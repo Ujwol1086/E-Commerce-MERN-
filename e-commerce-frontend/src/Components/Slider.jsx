@@ -7,7 +7,7 @@ const Slider = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("https://fakestoreapi.com/products?limit=6");
+        const res = await fetch("http://localhost:5000/api/product");
         const data = await res.json();
         setProducts(data);
       } catch (error) {
@@ -37,7 +37,7 @@ const Slider = () => {
           <div className="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
             <img
               className="p-4 rounded-t-lg h-96 w-full object-contain"
-              src={products[currentIndex].image}
+              src={`http://localhost:5000/${products[currentIndex].productImage}`}
             />
           </div>
         )}
