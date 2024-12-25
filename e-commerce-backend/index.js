@@ -36,6 +36,3 @@ app.use("/api/product", productRoutes);
 app.use("/api/payment", paymentRoutes);
 
 app.listen(port, () => console.log("Server is running on port " + port));
-
-const khalti = process.env.KHALTI_KEY;
-console.log(khalti);
