@@ -1,34 +1,36 @@
-import axios from "axios";
-import Order from "../models/orderModel.js";
-import orderItem from "../models/orderItemModel.js";
-import Product from "../models/productModel.js"
-import UserToken from "../models/usertokenModel.js";
+import request from "request";
 import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import Order from "../models/OrderModel.js";
+import OrderItem from "../models/OrderItemModel.js";
+import Product from "../models/productModel.js";
+import UserToken from "../models/usertokenModel.js";
 
 export const initializePayment = async (req, res) =>
 {
     try
     {
-        //fetching token and extracting user id
-        const token = req.headers.authorization.split(" ")[1];
+        const tokenHeader = req.headers.authorization;
+        if (!tokenHeader)
+        {
+            return res.status(401).json({ message: "No authorization header found" });
+        }
+
+        const token = tokenHeader.split(" ")[1];
         const isTokenExists = await UserToken.findOne({ jwt: token });
         if (!isTokenExists)
         {
-            return res.status(401).json({ message: "Access Denied Please Login" });
+            return res.status(401).json({ message: "Access Denied. Please login." });
         }
+
         const decoded = jwt.verify(token, process.env.JWT);
-        const user = await User.findById(decoded.id);
+        const user = await UserToken.findOne({ user: decoded.id });
         if (!user)
         {
             return res.status(404).json({ message: "User not found" });
         }
 
         const {
-            product,
+            items,
             firstName,
             lastName,
             email,
@@ -39,79 +41,93 @@ export const initializePayment = async (req, res) =>
         } = req.body;
 
         let totalAmount = 0;
-        const orderItems = [];
 
-        for (const item of product)
+        for (const item of items)
         {
             const product = await Product.findById(item.product);
             if (!product)
             {
-                return res.status(404).json({ message: "Product Not Found" });
-
-                totalAmount += product.price * item.quantity;
-
-                const orderitem = new orderItem({
-                    product: item.product,
-                    firstName,
-                    lastName,
-                    email,
-                    shippingAddress,
-                    city,
-                    phone,
-                    zipcode,
-                    quantity: item.quantity,
-                    user: user,
-                });
-                await orderitem.save();
-                orderItems.push(orderitem._id);
+                return res.status(404).json({ message: "Product not found" });
             }
+            totalAmount += product.price * item.quantity;
 
-            totalAmount *= 100;
-            const neworder = new Order({
-                user: user,
-                paymentStatus: "pending",
-                purchase_order_id: `Order-${new Date().getTime()}`,
-                payment_token: "",
+            const orderItemDoc = new OrderItem({
+                product: [item.product],
+                firstName,
+                lastName,
+                email,
+                shippingAddress,
+                city,
+                phone,
+                zipcode,
+                quantity: item.quantity,
+                user: decoded.id,
             });
-            await neworder.save();
+            await orderItemDoc.save();
+        }
 
-            const payload = {
-                return_url: "http://localhost:3000/api/payment/verify",
-                website_url: "http://localhost:3000",
-                amount: totalAmount,
-                purchase_order_id: neworder.purchase_order_id,
-                purchase_order_name: `Order-${neworder._id}`,
-                customer_info: {
-                    name: `${firstName} ${lastName}`,
-                    email: email,
-                    phone: phone,
-                },
-            };
+        totalAmount *= 100;
 
-            const header = {
+        const newOrder = new Order({
+            user: decoded.id,
+            paymentStatus: "pending",
+            purchase_order_id: `Order-${Date.now()}`,
+            payment_token: "",
+        });
+        await newOrder.save();
+
+        const payload = {
+            return_url: "http://localhost:3000/payment/verify",
+            website_url: "http://localhost:3000",
+            amount: totalAmount,
+            purchase_order_id: newOrder.purchase_order_id,
+            purchase_order_name: `Order-${newOrder._id}`,
+            customer_info: {
+                name: `${firstName} ${lastName}`,
+                email,
+                phone,
+            },
+        };
+
+        const options = {
+            method: "POST",
+            url: "https://a.khalti.com/api/v2/epayment/initiate/",
+            headers: {
                 Authorization: `Key ${process.env.KHALTI_KEY}`,
                 "Content-Type": "application/json",
-            };
+            },
+            body: JSON.stringify(payload),
+        };
 
-            //Khalti Payment Gateway
-            const response = await axios.post(
-                "https://a.khalti.com/api/v2/payment/initialize/",
-                payload,
-                { headers: header }
-            );
-
-            if (response.status === 200)
+        request(options, async (error, response) =>
+        {
+            if (error)
             {
-                const responseData = response.data;
-                neworder.payment_token = responseData.token;
-                await neworder.save();
-                return res.status(200).json({ token: response.data.token });
+                console.error("Khalti API error:", error);
+                return res.status(400).json({ message: error.message });
             }
-            return res.status(400).json({ message: response.data });
-        }
+
+            if (response.statusCode === 200)
+            {
+                const responseData = JSON.parse(response.body);
+
+                newOrder.payment_token = responseData.pidx;
+                await newOrder.save();
+
+                return res.status(200).json({
+                    pidx: responseData.pidx,
+                    payment_url: responseData.payment_url,
+                    message: "Pyament successful",
+                });
+            } else
+            {
+                return res.status(response.statusCode).json({ message: response.body });
+            }
+        });
     } catch (e)
     {
-        res.status(400).json({ message: e.message });
+        console.error(e);
+        return res.status(400).json({ message: e.message });
     }
 };
 
@@ -119,43 +135,71 @@ export const verifyPayment = async (req, res) =>
 {
     try
     {
-        const { pxid } = req.query;
-        if (!pxid)
+        const { pidx } = req.query;
+        if (!pidx)
         {
-            return res.status(400).json({ message: "Payemnt Token Required!" });
+            return res
+                .status(400)
+                .json({ message: "pidx is required for verification." });
         }
 
-        const payload = {
-            pxid,
-        };
-
-        const header = {
-            Authorization: `Key ${process.enc.KHALTI_KEY}`,
-            "Content-Type": "application/json",
-        };
-
-        const response = await axios.post(
-            "https:/a.khalti.com/api/v2/payment/verify",
-            payload,
-            { headers: header }
-        );
-
-        if (response.status === 200)
+        const order = await Order.findOne({ payment_token: pidx });
+        if (!order)
         {
-            const responseData = response.data;
-            const order = await Order.findOne({ payment_token: pxid });
-            if (!order)
+            return res
+                .status(404)
+                .json({ message: "Order not found with given pidx." });
+        }
+
+        const options = {
+            method: "POST",
+            url: "https://a.khalti.com/api/v2/epayment/lookup/",
+            headers: {
+                Authorization: `Key ${process.env.KHALTI_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ pidx }),
+        };
+
+        request(options, async (error, response) =>
+        {
+            if (error)
             {
-                return res.status(404).json({ message: "Order Not Found" });
+                console.error("Khalti verification error:", error);
+                return res.status(400).json({ message: error.message });
             }
-            order.paymentStatus = "completed";
-            await order.save();
-        }
 
-        return res.status(response.status).json({ message: response.data });
+            if (response.statusCode === 200)
+            {
+                const responseData = JSON.parse(response.body);
 
+                if (
+                    responseData.data &&
+                    responseData.data.status &&
+                    responseData.data.status.toLowerCase() === "completed"
+                )
+                {
+                    order.paymentStatus = "completed";
+                    await order.save();
+
+                    return res.status(200).json({
+                        message: "Payment verified successfully",
+                        khaltiResponse: responseData.data,
+                    });
+                } else
+                {
+                    return res.status(200).json({
+                        message: responseData.data,
+                        khaltiResponse: responseData.data,
+                    });
+                }
+            } else
+            {
+                return res.status(response.statusCode).json({ message: response.body });
+            }
+        });
     } catch (e)
     {
-        res.status(400).json({ message: e.message });
+        return res.status(400).json({ message: e.message });
     }
-}
+};

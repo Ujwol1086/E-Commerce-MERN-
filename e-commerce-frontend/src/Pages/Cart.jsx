@@ -52,7 +52,9 @@ const Cart = () => {
               </tbody>
               <button onClick={handleClearCart}>Clear Cart</button>
             </table>
-            <Link className="mt-5 text-pink-500">Checkout</Link>
+            <Link to={"/checkout"} className="mt-5 text-pink-500">
+              Checkout
+            </Link>
           </div>
         ) : (
           <p className="text-gray-400 mt-5">Your cart is empty.</p>

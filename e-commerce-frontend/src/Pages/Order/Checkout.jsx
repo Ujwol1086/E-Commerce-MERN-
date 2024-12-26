@@ -1,7 +1,5 @@
-import React from "react";
-
 const Checkout = () => {
-  return <div>Checkout</div>;
+  return <div className="text-white">Checkout</div>;
 };
 
 export default Checkout;

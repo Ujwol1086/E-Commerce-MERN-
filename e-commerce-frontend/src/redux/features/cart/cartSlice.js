@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 
 const storedCartItems = userInfo && userInfo.id
-    ? JSON.parse(localStorage.getItem(`cartItems_${userInfo.id}`)) || []
+    ? JSON.parse(localStorage.getItem(`cartItems`)) || []
     : [];
 
 const initialState = {
@@ -32,24 +32,18 @@ const cartSlice = createSlice({
             // Save the updated cart to localStorage
             if (userInfo && userInfo.id)
             {
-                localStorage.setItem(`cartItems_${userInfo.id}`, JSON.stringify(state.cartItems));
+                localStorage.setItem(`cartItems`, JSON.stringify(state.cartItems));
             }
         },
+
         removeFromCart: (state, action) =>
         {
             if (userInfo && userInfo.id)
             {
-                // Retrieve the current cart from localStorage
-                const storedCart = JSON.parse(localStorage.getItem(`cartItems_${userInfo.id}`)) || [];
-
-                // Filter out the item to be removed
-                const updatedCart = storedCart.filter((item) => item.id !== action.payload.id);
-
-                // Update localStorage with the modified cart
-                localStorage.setItem(`cartItems_${userInfo.id}`, JSON.stringify(updatedCart));
-
-                // Update the Redux state with the modified cart
-                state.cartItems = updatedCart;
+                const cartItems = JSON.parse(localStorage.getItem(`cartItems`)) || [];
+                const updatedCartItems = cartItems.filter((item) => item.id != action.payload.id);
+                localStorage.setItem(`cartItems`, JSON.stringify(updatedCartItems));
+                state.cartItems = updatedCartItems;
             }
         },
 
@@ -61,7 +55,7 @@ const cartSlice = createSlice({
             // Remove cart items from localStorage
             if (userInfo && userInfo.id)
             {
-                localStorage.removeItem(`cartItems_${userInfo.id}`);
+                localStorage.removeItem(`cartItems`);
             }
         },
     },

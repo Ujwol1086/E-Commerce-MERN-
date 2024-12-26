@@ -18,7 +18,7 @@ const Navigation = ({ userInfo }) => {
 
   const handleLogOut = async () => {
     localStorage.removeItem("userInfo");
-    // localStorage.removeItem(`cartItems_${userInfo.id}`);
+    localStorage.removeItem(`cartItems_${userInfo.id}`);
     window.location.href = "/login";
   };
   const toggleSidebar = () => {
