@@ -17,6 +17,8 @@ import Order from "./Pages/Order/Order.jsx";
 import AllUsers from "./Pages/Admin/AllUsers.jsx";
 import AllProducts from "./Pages/Admin/AllProducts.jsx";
 import Checkout from "./Pages/Order/Checkout.jsx";
+import Shipping from "./Pages/Order/Shipping.jsx";
+import PlaceOrder from "./Pages/Order/Checkout.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -32,7 +34,9 @@ const router = createBrowserRouter(
       <Route path="/order" element={<Order />} />
       <Route path="/alluser" element={<AllUsers />} />
       <Route path="/allproduct" element={<AllProducts />} />
-      <Route path="/checkout" element={<Checkout />} />
+      {/* <Route path="/checkout" element={<Checkout />} /> */}
+      <Route path="/shipping" element={<Shipping />} />
+      <Route path="/placeorder" element={<PlaceOrder />} />
     </Route>
   )
 );
