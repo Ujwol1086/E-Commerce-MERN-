@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import Message from "../../components/Message";
-import ProgressSteps from "../../components/ProgressSteps";
+// import Message from "../../components/Message";
+import ProgressSteps from "../../Components/ProgressSteps";
 import { useSelector } from "react-redux";
 
 const PlaceOrder = () => {
@@ -10,7 +10,7 @@ const PlaceOrder = () => {
     <>
       <ProgressSteps step1 step2 step3 />
 
-      <div className="container mx-auto ml-20 mt-8 text-white">
+      <div className="w-full mx-auto mt-10 pl-20 text-white">
         {cart.cartItems.length === 0 ? (
           <h1>Cart is empty</h1>
         ) : (
@@ -31,7 +31,7 @@ const PlaceOrder = () => {
                   <tr key={index}>
                     <td className="p-2">
                       <img
-                        src={item.image}
+                        src={`http://localhost:5000/${item.productImage}`}
                         alt={item.name}
                         className="w-16 h-16 object-cover"
                       />
@@ -40,10 +40,10 @@ const PlaceOrder = () => {
                     <td className="p-2">
                       <Link to={`/product/${item.product}`}>{item.name}</Link>
                     </td>
-                    <td className="p-2">{item.qty}</td>
+                    <td className="p-2">{item.quantity}</td>
                     <td className="p-2">{item.price.toFixed(2)}</td>
                     <td className="p-2">
-                      $ {(item.qty * item.price).toFixed(2)}
+                      $ {(item.quantity * item.price).toFixed(2)}
                     </td>
                   </tr>
                 ))}
@@ -57,20 +57,16 @@ const PlaceOrder = () => {
           <div className="flex justify-between flex-wrap p-8 bg-[#181818]">
             <ul className="text-lg">
               <li>
-                <span className="font-semibold mb-4">Items:</span> $
-                {cart.itemsPrice}
+                <span className="font-semibold mb-4">Items:</span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Shipping:</span> $
-                {cart.shippingPrice}
+                <span className="font-semibold mb-4">Shipping:</span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Tax:</span> $
-                {cart.taxPrice}
+                <span className="font-semibold mb-4">Tax:</span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Total:</span> $
-                {cart.totalPrice}
+                <span className="font-semibold mb-4">Total:</span>
               </li>
             </ul>
 
@@ -83,7 +79,10 @@ const PlaceOrder = () => {
 
             <div>
               <h2 className="text-2xl font-semibold mb-4">Payment Method</h2>
-              <strong>Method:</strong>
+              <strong>Method:</strong>{" "}
+              <span className="text-purple-500 font-bold">
+                <Link>Khalti</Link>
+              </span>
             </div>
           </div>
 

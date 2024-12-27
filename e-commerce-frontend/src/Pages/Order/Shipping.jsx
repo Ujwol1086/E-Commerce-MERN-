@@ -28,7 +28,7 @@ const Shipping = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-white mb-2">Postal Code</label>
+            <label className="block text-white mb-2">Postal/Zip Code</label>
             <input
               type="text"
               className="w-full p-2 border rounded"
@@ -52,7 +52,6 @@ const Shipping = () => {
                   className="form-radio text-pink-500"
                   name="paymentMethod"
                 />
-
                 <span className="ml-2 text-white">Khalti</span>
               </label>
             </div>
@@ -60,8 +59,7 @@ const Shipping = () => {
 
           <button
             className="bg-pink-500 text-white py-2 px-4 rounded-full text-lg w-full"
-                      type="submit"
-                      
+            type="submit"
           >
             Continue
           </button>
