@@ -7,7 +7,11 @@ import {
   AiOutlineShoppingCart,
   AiOutlineUser,
 } from "react-icons/ai";
-import { MdAdminPanelSettings, MdLogout } from "react-icons/md";
+import {
+  MdAdminPanelSettings,
+  MdLogout,
+  MdArrowDropDown,
+} from "react-icons/md";
 import { FaRegHeart } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import "./Navigation.css";
@@ -15,6 +19,7 @@ import "./Navigation.css";
 const Navigation = ({ userInfo }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   // const [userInfo, setUserInfo] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleLogOut = async () => {
     localStorage.removeItem("userInfo");
@@ -27,6 +32,9 @@ const Navigation = ({ userInfo }) => {
 
   const closeSidebar = () => {
     setShowSidebar(false);
+  };
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
   };
 
   return (
@@ -75,21 +83,72 @@ const Navigation = ({ userInfo }) => {
       <div>
         {userInfo ? (
           <div className="flex flex-col">
-            {userInfo.role === "admin" ? (
-              <p className="flex items-center">
-                <MdAdminPanelSettings className="mr-2 mt-[3rem]" size={26} />
-                <span className="hidden nav-item-name mt-[3rem] text-white">
-                  {userInfo.username} (Admin)
-                </span>
-              </p>
-            ) : (
-              <p className="flex items-center">
-                <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
-                <span className="hidden nav-item-name mt-[3rem] text-white">
-                  {userInfo.username}
-                </span>
-              </p>
-            )}
+            <div className="relative flex">
+              {userInfo.role === "admin" ? (
+                <p className="flex items-center">
+                  <MdAdminPanelSettings className="mr-2 mt-[3rem]" size={26} />
+                  <span className="hidden nav-item-name mt-[3rem] text-white">
+                    {userInfo.username} (Admin)
+                  </span>
+                </p>
+              ) : (
+                <p className="flex items-center">
+                  <AiOutlineUser className="mr-2 mt-[3rem]" size={26} />
+                  <span className="hidden nav-item-name mt-[3rem] text-white">
+                    {userInfo.username}
+                  </span>
+                </p>
+              )}
+              <div>
+                <MdArrowDropDown
+                  onClick={toggleDropdown}
+                  className="hidden nav-item-name mt-[3rem] cursor-pointer"
+                  size={30}
+                />
+              </div>
+              {showDropdown && (
+                <div className=" absolute bottom-10 left-10 bg-gray-700 text-white p-2 rounded shadow-lg">
+                  {userInfo.role === "admin" ? (
+                    <>
+                      <Link
+                        to="/admindashboard"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Admin Dashboard
+                      </Link>
+                      <Link
+                        to="/addproduct"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Add Product
+                      </Link>
+                      <Link
+                        to="/allproducts"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Manage Product
+                      </Link>
+                      <Link
+                        to="/allusers"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Manage Users
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/profile"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Update Profile
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
             <button onClick={handleLogOut} className="flex items-center">
               <MdLogout className="mr-2 mt-[2rem]" />
               <span className="hidden nav-item-name mt-[2rem]">Log Out</span>
