@@ -42,8 +42,8 @@ const AllProducts = () => {
                 <td>{product.name}</td>
                 <td>{product.price}</td>
                 <td className="space-x-10">
-                  <button className="text-pink-500">Edit</button>
-                  <button className="text-red-500">Delete</button>
+                  <button className="bg-pink-500 p-2 rounded">Edit</button>
+                  <button className="bg-red-500 p-2 rounded">Delete</button>
                 </td>
               </tr>
             ))}

@@ -43,7 +43,6 @@ const createUser = async (req, res) =>
         res.status(500).json({ message: error.message });
     }
 }
-
 //controller when a user logs in
 const loginUser = async (req, res) =>
 {
@@ -85,7 +84,6 @@ const loginUser = async (req, res) =>
         res.status(400).json({ message: error.message });
     }
 }
-
 const changePassword = async (req, res) =>
 {
     try
@@ -129,24 +127,17 @@ const changePassword = async (req, res) =>
     }
 };
 
-// const getCurrentUser = async (req, res) =>
-// {
-//     try
-//     {
-//         const user = await User.findById(req.user.id);
-//         if (user)
-//         {
-//             res.json({
-//                 _id: user._id,
-//                 username: user.username,
-//                 email: user.email
-//             })
-//         }
-//     } catch (error)
-//     {
-//         res.status(400).json({ message: error.message });
-//     }
-// }
+const getAllUser = async (req, res) =>
+{
+    try
+    {
+        const user = await User.find();
+        res.json(user);
+    } catch (error)
+    {
+        res.status(400).json({ message: error.message });
+    }
+}
 const updateUser = async (req, res) =>
 {
     try
@@ -197,5 +188,4 @@ const logOut = async (req, res) =>
         res.status(400).json({ message: e.message });
     }
 }
-
-export { createUser, loginUser, updateUser, logOut, changePassword };
+export { createUser, loginUser, updateUser, logOut, changePassword, getAllUser };
