@@ -107,7 +107,7 @@ const Navigation = ({ userInfo }) => {
                 />
               </div>
               {showDropdown && (
-                <div className=" absolute bottom-10 left-10 bg-gray-700 text-white p-2 rounded shadow-lg">
+                <div className=" absolute hidden nav-item-name bottom-10 left-10 bg-gray-700 text-white p-2 rounded shadow-lg">
                   {userInfo.role === "admin" ? (
                     <>
                       <Link
