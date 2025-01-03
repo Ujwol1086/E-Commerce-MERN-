@@ -1,27 +1,37 @@
 // implement the khalti api in this
 import axios from "axios";
 import Order from "../models/OrderModel.js";
-import orderItem from "../models/OrderItemModel.js";
 import Product from "../models/productModel.js";
 import jwt from "jsonwebtoken";
 import UserToken from "../models/usertokenModel.js";
+import OrderItem from "../models/OrderItemModel.js";
+import request from "request";
+
 export const initializePayment = async (req, res) =>
 {
-    const token = req.headers.authorization.split(" ")[1];
-    const isTokenExists = await UserToken.findOne({ jwt: token });
-    if (!isTokenExists)
-    {
-        return res.status(401).json({ message: "Access Denied please login" });
-    }
-    const decoded = jwt.verify(token, process.env.JWT);
-    const user = await UserToken.findOne({ user: decoded.id });
-    if (!user)
-    {
-        return res.status(404).json({ message: "User not found" });
-    }
-    console.log(decoded.id);
     try
     {
+        const tokenHeader = req.headers.authorization;
+        if (!tokenHeader)
+        {
+            return res.status(401).json({ message: "No authorization header found" });
+        }
+
+        const token = tokenHeader.split(" ")[1];
+        const isTokenExists = await UserToken.findOne({ jwt: token });
+        if (!isTokenExists)
+        {
+            return res.status(401).json({ message: "Access Denied. Please login." });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT);
+        const user = await UserToken.findOne({ userId: decoded.id });
+        // console.log(user);
+        if (!user)
+        {
+            return res.status(404).json({ message: "User not found" });
+        }
+
         const {
             items,
             firstName,
@@ -34,7 +44,6 @@ export const initializePayment = async (req, res) =>
         } = req.body;
 
         let totalAmount = 0;
-        const orderItems = [];
 
         for (const item of items)
         {
@@ -43,11 +52,10 @@ export const initializePayment = async (req, res) =>
             {
                 return res.status(404).json({ message: "Product not found" });
             }
-
             totalAmount += product.price * item.quantity;
 
-            const orderitem = new orderItem({
-                product: item.product,
+            const orderItem = new OrderItem({
+                product: [item.product],
                 firstName,
                 lastName,
                 email,
@@ -58,56 +66,71 @@ export const initializePayment = async (req, res) =>
                 quantity: item.quantity,
                 user: decoded.id,
             });
-            await orderitem.save();
-            orderItems.push(orderitem._id);
+            await orderItem.save();
         }
+
         totalAmount *= 100;
 
-        const neworder = new Order({
+        const newOrder = new Order({
             user: decoded.id,
             paymentStatus: "pending",
-            purchase_order_id: `Order-${new Date().getTime()}`,
+            purchase_order_id: `Order-${Date.now()}`,
             payment_token: "",
         });
-
-        await neworder.save();
+        await newOrder.save();
 
         const payload = {
             return_url: "http://localhost:3000/payment/verify",
             website_url: "http://localhost:3000",
             amount: totalAmount,
-            purchase_order_id: neworder.purchase_order_id,
-            purchase_order_name: `Order-${neworder._id}`,
+            purchase_order_id: newOrder.purchase_order_id,
+            purchase_order_name: `Order-${newOrder._id}`,
             customer_info: {
                 name: `${firstName} ${lastName}`,
-                email: email,
-                phone: phone,
+                email,
+                phone,
             },
         };
 
-        const header = {
-            Authorization: `Key ${process.env.KHALTI_KEY}`,
-            "Content-Type": "application/json",
+        const options = {
+            method: "POST",
+            url: "https://a.khalti.com/api/v2/epayment/initiate/",
+            headers: {
+                Authorization: `Key ${process.env.KHALTI_KEY}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
         };
 
-        // Khalti payment gateway
-        const response = await axios.post(
-            "https://a.khalti.com/api/v2/payment/initialize/",
-            payload,
-            { headers: header }
-        );
-
-        if (response.status === 200)
+        request(options, async (error, response) =>
         {
-            const responseData = response.data;
-            neworder.payment_token = responseData.token;
-            await neworder.save();
-            return res.status(200).json({ token: response.data.token });
-        }
-        return res.status(response.status).json({ message: response.data });
+            if (error)
+            {
+                console.error("Khalti API error:", error);
+                return res.status(400).json({ message: error.message });
+            }
+
+            if (response.statusCode === 200)
+            {
+                const responseData = JSON.parse(response.body);
+
+                newOrder.payment_token = responseData.pidx;
+                await newOrder.save();
+
+                return res.status(200).json({
+                    pidx: responseData.pidx,
+                    payment_url: responseData.payment_url,
+                    message: "Pyament successful",
+                });
+            } else
+            {
+                return res.status(response.statusCode).json({ message: response.body });
+            }
+        });
     } catch (e)
     {
-        res.status(400).json({ message: e.message });
+        console.error(e);
+        return res.status(400).json({ message: e.message });
     }
 };
 

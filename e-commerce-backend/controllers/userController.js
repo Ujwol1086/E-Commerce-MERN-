@@ -61,7 +61,7 @@ const loginUser = async (req, res) =>
         }
         const token = jwt.sign({ id: existingUser._id }, process.env.JWT, { expiresIn: "1d" });
 
-        const userToken = await UserToken.findOne({ id: existingUser._id });
+        const userToken = await UserToken.findOne({ userId: existingUser._id });
 
         if (userToken)
         {
@@ -69,7 +69,7 @@ const loginUser = async (req, res) =>
             await userToken.save();
         } else
         {
-            const newUserToken = new UserToken({ id: existingUser._id, jwt: token });
+            const newUserToken = new UserToken({ userId: existingUser._id, jwt: token });
             await newUserToken.save();
         }
         res.status(200).json({
