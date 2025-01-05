@@ -41,6 +41,8 @@ export const initializePayment = async (req, res) =>
             city,
             phone,
             zipcode,
+            taxAmount,
+            shippingCost,
         } = req.body;
 
         let totalAmount = 0;
@@ -69,6 +71,8 @@ export const initializePayment = async (req, res) =>
             await orderItem.save();
         }
 
+        totalAmount += taxAmount + shippingCost;
+
         totalAmount *= 100;
 
         const newOrder = new Order({
@@ -80,8 +84,8 @@ export const initializePayment = async (req, res) =>
         await newOrder.save();
 
         const payload = {
-            return_url: "http://localhost:3000/payment/verify",
-            website_url: "http://localhost:3000",
+            return_url: "http://localhost:5000/payment/verify",
+            website_url: "http://localhost:5000",
             amount: totalAmount,
             purchase_order_id: newOrder.purchase_order_id,
             purchase_order_name: `Order-${newOrder._id}`,

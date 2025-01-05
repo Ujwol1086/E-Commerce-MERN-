@@ -2,9 +2,60 @@ import { Link } from "react-router-dom";
 // import Message from "../../components/Message";
 import ProgressSteps from "../../Components/ProgressSteps";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
   const cart = useSelector((state) => state.cart);
+  const shipping = useSelector((state) => state.shipping.shippingDetails);
+
+  const itemsTotal = cart.cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
+  const shippingCost = itemsTotal > 500 ? 0 : 10; // Free shipping for orders over $100
+  const tax = itemsTotal * 0.1; // 10% tax
+  const total = itemsTotal + shippingCost + tax;
+
+  const totalAmountInSmallestUnit = total * 100;
+
+  const handlePlaceOrder = async () => {
+    try {
+      const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+      const token = userInfo ? userInfo.token : null;
+      const payload = {
+        items: cart.cartItems.map((item) => ({
+          product: item._id,
+          quantity: item.quantity,
+        })),
+        firstName: shipping.firstName,
+        lastName: shipping.lastName,
+        email: shipping.email,
+        shippingAddress: shipping.address,
+        city: shipping.city,
+        phone: shipping.phone,
+        zipcode: shipping.zipcode,
+        amount: totalAmountInSmallestUnit + tax + shippingCost, // Add tax and shipping to the total amount
+        taxAmount: tax,
+        shippingCost: shippingCost,
+      };
+      const response = await axios.post(
+        "http://localhost:5000/api/payment/initialize",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const { payment_url } = response.data;
+        window.location.href = payment_url; // Redirect to Khalti's payment page
+      }
+    } catch (error) {
+      toast.error("Payment Error:", error.message);
+    }
+  };
 
   return (
     <>
@@ -57,23 +108,33 @@ const PlaceOrder = () => {
           <div className="flex justify-between flex-wrap p-8 bg-[#181818]">
             <ul className="text-lg">
               <li>
-                <span className="font-semibold mb-4">Items:</span>
+                <span className="font-semibold mb-4">
+                  Items: {cart.cartItems.length}{" "}
+                </span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Shipping:</span>
+                <span className="font-semibold mb-4">
+                  Shipping: ${shippingCost}{" "}
+                </span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Tax:</span>
+                <span className="font-semibold mb-4">
+                  Tax: ${tax.toFixed(2)}{" "}
+                </span>
               </li>
               <li>
-                <span className="font-semibold mb-4">Total:</span>
+                <span className="font-semibold mb-4">
+                  Total: ${total.toFixed(2)}{" "}
+                </span>
               </li>
             </ul>
 
             <div>
               <h2 className="text-2xl font-semibold mb-4">Shipping</h2>
               <p>
-                <strong>Address:</strong>
+                <strong>
+                  Address: {shipping.address}, {shipping.city}{" "}
+                </strong>
               </p>
             </div>
 
@@ -89,6 +150,7 @@ const PlaceOrder = () => {
           <button
             type="button"
             className="bg-pink-500 text-white py-2 px-4 rounded-full text-lg w-full mt-4"
+            onClick={handlePlaceOrder}
           >
             Place Order
           </button>

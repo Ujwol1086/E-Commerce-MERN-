@@ -21,7 +21,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 let allowedOrigins = ["http://localhost:5173"];
-app.use(cors(allowedOrigins));
+app.use(cors({
+    origin: allowedOrigins,
+    methods: "GET, POST, PUT, DELETE",
+    allowedHeaders: "Content-Type, Authorization"
+}));
 
 app.use('/uploads', express.static(path.join('uploads')));
 

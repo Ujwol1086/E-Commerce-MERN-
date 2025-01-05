@@ -1,7 +1,54 @@
+import { useState } from "react";
 import ProgressSteps from "../../Components/ProgressSteps";
+import { useDispatch } from "react-redux";
+import { saveShippingDetails } from "../../redux/features/cart/shippingSlice";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { set } from "mongoose";
 
 const Shipping = () => {
-  //   const cart = useSelector((state) => state.cart);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipcode, setZipcode] = useState("");
+  const [country, setCountry] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleOrder = (e) => {
+    e.preventDefault();
+
+    if (
+      !firstName ||
+      !lastName ||
+      !email ||
+      !address ||
+      !city ||
+      !zipcode ||
+      !phone ||
+      !country
+    ) {
+      toast.error("All fields are required");
+    } else {
+      const shippingData = {
+        firstName,
+        lastName,
+        email,
+        address,
+        city,
+        country,
+        phone,
+        zipcode,
+        paymentMethod,
+      };
+      dispatch(saveShippingDetails(shippingData));
+      navigate("/placeorder");
+    }
+  };
 
   return (
     <div className="container mx-auto mt-10">
@@ -12,11 +59,39 @@ const Shipping = () => {
             Shipping
           </h1>
           <div className="mb-4">
+            <label className="block text-white mb-2">First Name</label>
+            <input
+              type="text"
+              className="w-full p-2 border rounded"
+              placeholder="Enter First Name"
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-white mb-2">Last Name</label>
+            <input
+              type="text"
+              className="w-full p-2 border rounded"
+              placeholder="Enter Last Name"
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-white mb-2">Email</label>
+            <input
+              type="email"
+              className="w-full p-2 border rounded"
+              placeholder="Enter Email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
             <label className="block text-white mb-2">Address</label>
             <input
               type="text"
               className="w-full p-2 border rounded"
               placeholder="Enter address"
+              onChange={(e) => setAddress(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -25,6 +100,7 @@ const Shipping = () => {
               type="text"
               className="w-full p-2 border rounded"
               placeholder="Enter city"
+              onChange={(e) => setCity(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -33,6 +109,16 @@ const Shipping = () => {
               type="text"
               className="w-full p-2 border rounded"
               placeholder="Enter postal code"
+              onChange={(e) => setZipcode(e.target.value)}
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-white mb-2">Phone</label>
+            <input
+              type="number"
+              className="w-full p-2 border rounded"
+              placeholder="Enter Phone Number"
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -41,6 +127,7 @@ const Shipping = () => {
               type="text"
               className="w-full p-2 border rounded"
               placeholder="Enter country"
+              onChange={(e) => setCountry(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -51,6 +138,8 @@ const Shipping = () => {
                   type="radio"
                   className="form-radio text-pink-500"
                   name="paymentMethod"
+                  value="Khalti"
+                  onChange={(e) => setPaymentMethod(e.target.value)}
                 />
                 <span className="ml-2 text-white">Khalti</span>
               </label>
@@ -60,6 +149,7 @@ const Shipping = () => {
           <button
             className="bg-pink-500 text-white py-2 px-4 rounded-full text-lg w-full"
             type="submit"
+            onClick={handleOrder}
           >
             Continue
           </button>
