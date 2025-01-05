@@ -19,7 +19,7 @@ const AllProducts = () => {
 
   return (
     <div className="container text-center text-white">
-      <h1 className="text-2xl font-semibold pt-16 mb-10">Products</h1>
+      <h1 className="text-2xl font-semibold pt-16 mb-10">All Products</h1>
       <div className="mt-10 flex items-center justify-center">
         <table className="border border-gray-500 border-separate border-spacing-x-32 border-spacing-y-5">
           <thead>
@@ -32,7 +32,7 @@ const AllProducts = () => {
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={products.id}>
+              <tr key={product.id}>
                 <td className="p-2 w-32 h-20 ">
                   <img
                     src={`http://localhost:5000/${product.productImage}`}
