@@ -18,6 +18,7 @@ import AllUsers from "./Pages/Admin/AllUsers.jsx";
 import AllProducts from "./Pages/Admin/AllProducts.jsx";
 import Shipping from "./Pages/Order/Shipping.jsx";
 import PlaceOrder from "./Pages/Order/PlaceOrder.jsx";
+import AdminDashboard from "./Pages/Admin/AdminDashboard.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -36,7 +37,8 @@ const router = createBrowserRouter(
       <Route path="/shipping" element={<Shipping />} />
       <Route path="/placeorder" element={<PlaceOrder />} />
       <Route path="/allusers" element={<AllUsers />} />
-      <Route path="/allproducts" element={<AllProducts/>} />
+      <Route path="/allproducts" element={<AllProducts />} />
+      <Route path="/admindashboard" element={<AdminDashboard />} />
     </Route>
   )
 );
