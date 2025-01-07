@@ -20,6 +20,7 @@ import Shipping from "./Pages/Order/Shipping.jsx";
 import PlaceOrder from "./Pages/Order/PlaceOrder.jsx";
 import AdminDashboard from "./Pages/Admin/AdminDashboard.jsx";
 import VerificationSuccess from "./Pages/Order/VerificationSuccess.jsx";
+import AllOrders from "./Pages/Admin/AllOrders.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -31,15 +32,16 @@ const router = createBrowserRouter(
       <Route path="/cart" element={<Cart />} />
       <Route path="/singleproduct/:id" element={<SingleProduct />} />
       <Route path="/search" element={<SearchProduct />} />
-      <Route path="/addproduct" element={<AddProduct />} />
       <Route path="/order" element={<Order />} />
-      <Route path="/alluser" element={<AllUsers />} />
-      <Route path="/allproduct" element={<AllProducts />} />
       <Route path="/shipping" element={<Shipping />} />
       <Route path="/placeorder" element={<PlaceOrder />} />
+      <Route path="/alluser" element={<AllUsers />} />
+      <Route path="/allproduct" element={<AllProducts />} />
+      <Route path="/addproduct" element={<AddProduct />} />
       <Route path="/allusers" element={<AllUsers />} />
       <Route path="/allproducts" element={<AllProducts />} />
       <Route path="/admindashboard" element={<AdminDashboard />} />
+      <Route path="/allorders" element={<AllOrders />} />
       <Route path="/api/payment/verify" element={<VerificationSuccess />} />
     </Route>
   )

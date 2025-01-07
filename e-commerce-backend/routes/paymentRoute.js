@@ -4,6 +4,6 @@ import { initializePayment, verifyPayment } from "../controllers/paymentControll
 const router = express.Router();
 
 router.route("/initialize").post(initializePayment);
-router.route("/verify/:pxid").get(verifyPayment);
+router.route("/verify").get(verifyPayment);
 
 export default router;
