@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { saveShippingDetails } from "../../redux/features/cart/shippingSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { set } from "mongoose";
 
 const Shipping = () => {
   const [firstName, setFirstName] = useState("");
@@ -18,7 +17,6 @@ const Shipping = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const shippingDetails = localStorage.getItem("shippingDetails");
   const handleOrder = (e) => {
     e.preventDefault();
 

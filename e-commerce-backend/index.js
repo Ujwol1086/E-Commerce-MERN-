@@ -9,6 +9,7 @@ import userRoutes from "./routes/userRoute.js";
 import categoryRoutes from "./routes/categoryRoute.js";
 import productRoutes from "./routes/productRoutes.js";
 import paymentRoutes from "./routes/paymentRoute.js";
+import { checkAdminModels } from "./middlewares/authMiddleware.js";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.get("/", (req, res) =>
     res.send("Server is running");
 });
 app.use("/api/users", userRoutes);
+
 app.use("/api/category", categoryRoutes);
 app.use("/api/product", productRoutes);
 app.use("/api/payment", paymentRoutes);

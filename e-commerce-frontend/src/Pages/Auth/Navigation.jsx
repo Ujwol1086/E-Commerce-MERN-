@@ -23,7 +23,8 @@ const Navigation = ({ userInfo }) => {
 
   const handleLogOut = async () => {
     localStorage.removeItem("userInfo");
-    localStorage.removeItem(`cartItems_${userInfo.id}`);
+    localStorage.removeItem("cartItems");
+    localStorage.removeItem("shippingDetails");
     window.location.href = "/login";
   };
   const toggleSidebar = () => {
@@ -121,6 +122,12 @@ const Navigation = ({ userInfo }) => {
                         className="block py-1 px-2 hover:bg-gray-600"
                       >
                         Add Product
+                      </Link>
+                      <Link
+                        to="/allorders"
+                        className="block py-1 px-2 hover:bg-gray-600"
+                      >
+                        Orders
                       </Link>
                       <Link
                         to="/allproducts"

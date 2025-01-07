@@ -1,26 +1,34 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Card = () => {
   const [products, setProducts] = useState([]);
+  const token = JSON.parse(localStorage.getItem("userInfo")).token;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/product");
-        const category = await fetch("http://localhost:5000/api/category");
-        const categoryData = await category.json();
-        const data = await res.json();
+        const res = await axios.get("http://localhost:5000/api/product", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        // const category = await axios.get("http://localhost:5000/api/category", {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // });
         //sort product randomly
-        const shuffledProduct = data.sort(() => 0.5 - Math.random());
-        setProducts(categoryData && shuffledProduct);
+        const shuffledProduct = res.data.sort(() => 0.5 - Math.random());
+        setProducts(shuffledProduct);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

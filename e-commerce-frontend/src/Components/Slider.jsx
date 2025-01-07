@@ -1,22 +1,26 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 const Slider = () => {
   const [products, setProducts] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-
+  const token = JSON.parse(localStorage.getItem("userInfo")).token;
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/product");
-        const data = await res.json();
-        setProducts(data);
+        const res = await axios.get("http://localhost:5000/api/product", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setProducts(res.data);
       } catch (error) {
         console.log(error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
   const next = () => {
     setCurrentIndex((prevIndex) =>

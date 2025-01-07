@@ -40,7 +40,7 @@ const router = createBrowserRouter(
       <Route path="/allusers" element={<AllUsers />} />
       <Route path="/allproducts" element={<AllProducts />} />
       <Route path="/admindashboard" element={<AdminDashboard />} />
-      <Route path="/verify-success" element={<VerificationSuccess />} />
+      <Route path="/api/payment/verify" element={<VerificationSuccess />} />
     </Route>
   )
 );
