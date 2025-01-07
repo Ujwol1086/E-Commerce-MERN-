@@ -18,7 +18,7 @@ const Shipping = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
+  const shippingDetails = localStorage.getItem("shippingDetails");
   const handleOrder = (e) => {
     e.preventDefault();
 

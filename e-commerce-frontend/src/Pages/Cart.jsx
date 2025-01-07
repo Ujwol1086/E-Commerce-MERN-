@@ -1,10 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromCart, resetCart } from "../redux/features/cart/cartSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
+  const navigate = useNavigate();
+  const shippingDetails = useSelector(
+    (state) => state.shipping.shippingDetails
+  );
 
   const handleClearCart = () => {
     dispatch(resetCart());
@@ -12,6 +16,12 @@ const Cart = () => {
 
   const handleRemoveItem = () => {
     dispatch(removeFromCart());
+  };
+
+  const checkShipping = () => {
+    if (!shippingDetails) {
+      navigate("/placeorder");
+    }
   };
 
   return (
@@ -52,7 +62,10 @@ const Cart = () => {
               </tbody>
               <button onClick={handleClearCart}>Clear Cart</button>
             </table>
-            <Link to="/shipping" className="mt-5 text-pink-500">
+            <Link
+              to={shippingDetails ? "/placeorder" : "/shipping"}
+              className="mt-5 text-pink-500"
+            >
               Checkout
             </Link>
           </div>

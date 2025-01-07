@@ -84,7 +84,7 @@ export const initializePayment = async (req, res) =>
         await newOrder.save();
 
         const payload = {
-            return_url: "http://localhost:5000/payment/verify",
+            return_url: "http://localhost:5000/api/payment/verify",
             website_url: "http://localhost:5000",
             amount: totalAmount,
             purchase_order_id: newOrder.purchase_order_id,
@@ -165,12 +165,18 @@ export const verifyPayment = async (req, res) =>
         {
             const responseData = response.data;
             const order = await Order.findOne({ payment_token: pxid });
+            console.log(order);
             if (!order)
             {
                 return res.status(404).json({ message: "Order not found" });
             }
             order.paymentStatus = "completed";
             await order.save();
+
+            return res.status(200).json({
+                message: "Payment successful",
+                success: true,
+            });
         }
         return res.status(response.status).json({ message: response.data });
     } catch (e)
