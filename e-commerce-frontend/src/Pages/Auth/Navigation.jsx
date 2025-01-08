@@ -65,7 +65,7 @@ const Navigation = ({ userInfo }) => {
         </Link>
         <Link
           to="/cart"
-          className="flex items-center transition-transform transform hover:translate-x-2"
+          className="flex relative items-center transition-transform transform hover:translate-x-2"
         >
           <AiOutlineShoppingCart className="mr-2 mt-[3rem]" size={26} />
           <span className="hidden nav-item-name mt-[3rem]">Cart</span>

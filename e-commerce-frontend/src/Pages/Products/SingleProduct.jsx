@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../../redux/features/cart/cartSlice";
 import { toast } from "react-toastify";
@@ -9,10 +9,12 @@ const SingleProduct = () => {
   // To Initialize as an object use "useState({})" and to initialize as an array use "useState([])"
   const [product, setProduct] = useState({});
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const addToCartHandler = () => {
     dispatch(addToCart(product));
     toast.success("Product successfully added to cart");
+    navigate("/");
   };
 
   useEffect(() => {

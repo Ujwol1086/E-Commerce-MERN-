@@ -18,7 +18,7 @@ const cartSlice = createSlice({
     reducers: {
         addToCart: (state, action) =>
         {
-            const itemExist = state.cartItems.find((item) => item.id === action.payload.id && item.name === action.payload.name);
+            const itemExist = state.cartItems.find((item) => item._id === action.payload._id && item.name === action.payload.name);
             if (itemExist)
             {
                 // Increment quantity of the existing item
@@ -36,33 +36,32 @@ const cartSlice = createSlice({
             }
         },
 
-        removeFromCart: (state, action) =>
+        increasedQuantity: (state, action) =>
         {
-            const index = state.cartItems.findIndex(
-                (item) => item.id === action.payload.id && item.name === action.payload.name
-            );
-
-            if (index !== -1)
+            const item = state.cartItems.find((cartItem) => cartItem._id === action.payload);
+            // console.log(action.payload)
+            if (item)
             {
-                // Decrement quantity or remove item
-                if (state.cartItems[index].quantity > 1)
-                {
-                    state.cartItems[index].quantity -= 1;
-                } else
-                {
-                    state.cartItems.splice(index, 1);
-                }
+                item.quantity += 1;
+            }
+            localStorage.setItem(`cartItems`, JSON.stringify(state.cartItems));
+        },
+        decreasedQuantity: (state, action) =>
+        {
+            const item = state.cartItems.find((cartItem) => cartItem._id === action.payload);
+            // console.log(action.payload)
 
-                // Update totals
-                state.cartTotalQuantity = state.cartItems.reduce((total, item) => total + item.quantity, 0);
-                state.cartTotalAmount = state.cartItems.reduce((total, item) => total + item.quantity * item.price, 0);
-
-                // Save updated cart to localStorage
-                if (userInfo && userInfo.id)
+            if (item)
+            {
+                item.quantity -= 1;
+                if (item.quantity === 0)
                 {
-                    localStorage.setItem(`cartItems`, JSON.stringify(state.cartItems));
+                    // const itemQTY = state.cartItems.find((cartItem) => cartItem.id === action.payload);
+                    state.cartItems.splice(state.cartItems.indexOf(item), 1);
                 }
             }
+
+            localStorage.setItem(`cartItems`, JSON.stringify(state.cartItems));
         },
         resetCart: (state) =>
         {
@@ -79,6 +78,6 @@ const cartSlice = createSlice({
 });
 
 
-export const { addToCart, removeFromCart, resetCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, resetCart, increasedQuantity, decreasedQuantity } = cartSlice.actions;
 
 export default cartSlice.reducer;

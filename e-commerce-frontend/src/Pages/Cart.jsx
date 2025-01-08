@@ -1,11 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
-import { removeFromCart, resetCart } from "../redux/features/cart/cartSlice";
+import {
+  decreasedQuantity,
+  increasedQuantity,
+  resetCart,
+} from "../redux/features/cart/cartSlice";
 import { Link, useNavigate } from "react-router-dom";
 
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.cartItems);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const shippingDetails = useSelector(
     (state) => state.shipping.shippingDetails
   );
@@ -14,14 +18,11 @@ const Cart = () => {
     dispatch(resetCart());
   };
 
-  const handleRemoveItem = () => {
-    dispatch(removeFromCart());
+  const handleIncreaseQuantity = (id) => {
+    dispatch(increasedQuantity(id));
   };
-
-  const checkShipping = () => {
-    if (!shippingDetails) {
-      navigate("/placeorder");
-    }
+  const handleDecreaseQuantity = (id) => {
+    dispatch(decreasedQuantity(id));
   };
 
   return (
@@ -37,12 +38,11 @@ const Cart = () => {
                   <th>Price</th>
                   <th>Quantity</th>
                   <th>Total</th>
-                  <th>Action</th>
                 </tr>
               </thead>
               <tbody className="text-center">
                 {cartItems.map((item) => (
-                  <tr key={item.id}>
+                  <tr key={item._id}>
                     <td className="flex items-center gap-2">
                       <img
                         src={`http://localhost:5000/${item.productImage}`}
@@ -52,11 +52,26 @@ const Cart = () => {
                       {item.name}
                     </td>
                     <td>${item.price}</td>
-                    <td>{item.quantity}</td>
-                    <td>${item.price * item.quantity}</td>
                     <td>
-                      <button onClick={handleRemoveItem}>Remove</button>
+                      <button
+                        className="p-2"
+                        onClick={() => handleDecreaseQuantity(item._id)}
+                      >
+                        {" "}
+                        -{" "}
+                      </button>
+                      {item.quantity}
+                      <button
+                        className="p-2"
+                        onClick={() => {
+                          handleIncreaseQuantity(item._id);
+                        }}
+                      >
+                        {" "}
+                        +{" "}
+                      </button>
                     </td>
+                    <td>${item.price * item.quantity}</td>
                   </tr>
                 ))}
               </tbody>
