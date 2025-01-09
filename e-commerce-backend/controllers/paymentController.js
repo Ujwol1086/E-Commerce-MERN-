@@ -165,7 +165,7 @@ export const verifyPayment = async (req, res) =>
         {
             const responseData = response.data;
             const order = await Order.findOne({ payment_token: pxid });
-            console.log(order);
+            // console.log(order);
             if (!order)
             {
                 return res.status(404).json({ message: "Order not found" });

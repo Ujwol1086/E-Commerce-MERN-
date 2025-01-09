@@ -7,39 +7,45 @@ const VerificationSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // verify payment
   useEffect(() => {
     const verifyPayment = async () => {
       const params = new URLSearchParams(location.search);
       const pxid = params.get("pxid");
+
       if (!pxid) {
         toast.error("Payment token is missing!");
         navigate("/cart");
         return;
       }
+
       try {
-        const response = axios.get(
+        const response = await axios.get(
           `http://localhost:5000/api/payment/verify?pxid=${pxid}`
         );
-        if (response.data.success) {
-          toast.success("Payment Verified Successfully!");
-          navigate("/"); // Redirect to the home page
+
+        if (response.status === 200 && response.data.success) {
+          toast.success("Payment verified successfully!");
+          navigate("/orders"); // Redirect user to orders page or a confirmation page
         } else {
-          toast.error("Payment Verification Failed!");
-          navigate("/cart"); // Redirect back to the cart
+          toast.error("Payment verification failed. Please try again.");
+          navigate("/cart");
         }
-      } catch (e) {
-        toast.error(e.message);
+      } catch (error) {
+        toast.error(
+          `Verification error: ${
+            error.response?.data?.message || error.message
+          }`
+        );
         navigate("/cart");
       }
     };
 
     verifyPayment();
-  }, [navigate, location]);
+  }, [location, navigate]);
 
   return (
-    <div className="text-center mt-10">
-      <h1>Verifying Payment...</h1>
+    <div className="flex justify-center items-center h-screen">
+      <h1 className="text-2xl font-semibold">Verifying your payment...</h1>
     </div>
   );
 };
