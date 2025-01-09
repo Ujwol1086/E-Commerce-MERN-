@@ -142,14 +142,14 @@ export const verifyPayment = async (req, res) =>
 {
     try
     {
-        const { pxid } = req.query;
-        if (!pxid)
+        const { pidx } = req.query;
+        if (!pidx)
         {
             return res.status(400).json({ message: "Payment token is required" });
         }
 
         const payload = {
-            pxid,
+            pidx,
         };
 
         const header = {
@@ -164,7 +164,7 @@ export const verifyPayment = async (req, res) =>
         if (response.status === 200)
         {
             const responseData = response.data;
-            const order = await Order.findOne({ payment_token: pxid });
+            const order = await Order.findOne({ payment_token: pidx });
             // console.log(order);
             if (!order)
             {
