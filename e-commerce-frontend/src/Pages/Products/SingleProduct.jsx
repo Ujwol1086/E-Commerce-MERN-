@@ -14,7 +14,7 @@ const SingleProduct = () => {
   const addToCartHandler = () => {
     dispatch(addToCart(product));
     toast.success("Product successfully added to cart");
-    navigate("/");
+    navigate("/shop");
   };
 
   useEffect(() => {

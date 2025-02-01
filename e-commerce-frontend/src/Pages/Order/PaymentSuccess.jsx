@@ -15,7 +15,6 @@ const PaymentSuccess = () => {
         const response = await axios.get(
           `http://localhost:5000/api/payment/verify?pidx=${pidx}`
         );
-
         if (response.data.success) {
           setTimeout(() => {
             navigate("/?status=success");

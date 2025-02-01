@@ -4,16 +4,19 @@ import { Link } from "react-router-dom";
 
 const Card = () => {
   const [products, setProducts] = useState([]);
-  const token = JSON.parse(localStorage.getItem("userInfo")).token;
+  // const token = JSON.parse(localStorage.getItem("userInfo")).token;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/product", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:5000/api/product"
+          // , {
+          //   headers: {
+          //     Authorization: `Bearer ${token}`,
+          //   },
+          //   }
+        );
         // const category = await axios.get("http://localhost:5000/api/category", {
         //   headers: {
         //     Authorization: `Bearer ${token}`,
@@ -28,7 +31,7 @@ const Card = () => {
     };
 
     fetchProducts();
-  }, [token]);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

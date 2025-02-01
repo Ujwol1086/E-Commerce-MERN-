@@ -147,7 +147,9 @@ export const verifyPayment = async (req, res) =>
         {
             return res.status(400).json({ message: "Payment token is required" });
         }
-        console.log("Received pidx:", pidx);
+
+        // console.log("Received pidx:", pidx);
+
         const payload = {
             pidx,
         };
@@ -156,18 +158,20 @@ export const verifyPayment = async (req, res) =>
             Authorization: `Key ${process.env.KHALTI_KEY}`,
             "Content-Type": "application/json",
         };
-        console.log("Payload:", payload);
-        console.log("Headers:", header);
+
+        // console.log("Payload:", payload);
+        // console.log("Headers:", header);
+
         const response = await axios.post(
             "https://a.khalti.com/api/v2/payment/verify/",
             payload,
             { headers: header }
         );
 
-        console.log("Khalti API Response:", response.data);
+        // console.log("Khalti API Response:", response.data);
 
         if (response.status === 200)
-        {   
+        {
             const responseData = response.data;
             const order = await Order.findOne({ payment_token: pidx });
             console.log(order);
@@ -177,7 +181,7 @@ export const verifyPayment = async (req, res) =>
             }
             order.paymentStatus = "completed";
             await order.save();
-            console.log(order);
+            // console.log(order);
 
             return res.redirect("http://localhost:3000/home?status=success");
         }
