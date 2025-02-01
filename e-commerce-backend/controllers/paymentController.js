@@ -67,6 +67,7 @@ export const initializePayment = async (req, res) =>
                 zipcode,
                 quantity: item.quantity,
                 user: decoded.id,
+                amount: totalAmount,
             });
             await orderItem.save();
         }
@@ -80,6 +81,7 @@ export const initializePayment = async (req, res) =>
             paymentStatus: "pending",
             purchase_order_id: `Order-${Date.now()}`,
             payment_token: "",
+            amount: totalAmount,
         });
         await newOrder.save();
 
@@ -150,8 +152,17 @@ export const verifyPayment = async (req, res) =>
 
         // console.log("Received pidx:", pidx);
 
+        const order = await Order.findOne({ payment_token: pidx });
+        if (!order)
+        {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // console.log("Order found:", order);
+
         const payload = {
-            pidx,
+            token: `${pidx}`,
+            amount: order.amount,
         };
 
         const header = {
@@ -168,7 +179,7 @@ export const verifyPayment = async (req, res) =>
             { headers: header }
         );
 
-        // console.log("Khalti API Response:", response.data);
+        console.log("Khalti API Response:", response.data);
 
         if (response.status === 200)
         {
@@ -186,8 +197,10 @@ export const verifyPayment = async (req, res) =>
             return res.redirect("http://localhost:3000/home?status=success");
         }
         return res.status(response.status).json({ message: response.data });
-    } catch (e)
+    } catch (error)
     {
-        res.status(400).json({ message: e.message });
+        // res.status(400).json({ message: e.message });
+        console.error("Khalti API Error:", error.response?.data || error.message);
+        res.status(400).json({ success: false, message: "Payment verification failed", error: error.response?.data });
     }
 };

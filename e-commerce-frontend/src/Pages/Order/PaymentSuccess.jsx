@@ -18,7 +18,7 @@ const PaymentSuccess = () => {
         if (response.data.success) {
           setTimeout(() => {
             navigate("/?status=success");
-          }, 3000);
+          }, 4000);
         }
       } catch (error) {
         console.error("Payment verification failed:", error);
@@ -31,7 +31,9 @@ const PaymentSuccess = () => {
 
   return (
     <div className="flex items-center justify-center h-screen">
-      <h1 className="text-xl font-semibold">Verifying your payment...</h1>
+      <h1 className="text-xl font-semibold text-white">
+        Verifying your payment...
+      </h1>
     </div>
   );
 };
