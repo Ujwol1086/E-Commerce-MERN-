@@ -20,7 +20,7 @@ import Shipping from "./Pages/Order/Shipping.jsx";
 import PlaceOrder from "./Pages/Order/PlaceOrder.jsx";
 import AdminDashboard from "./Pages/Admin/AdminDashboard.jsx";
 import AllOrders from "./Pages/Admin/AllOrders.jsx";
-import PaymentStatus from "./Pages/Order/PaymentStatus.jsx";
+import PaymentSuccess from "./Pages/Order/PaymentSuccess.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -42,7 +42,7 @@ const router = createBrowserRouter(
       <Route path="/allproducts" element={<AllProducts />} />
       <Route path="/admindashboard" element={<AdminDashboard />} />
       <Route path="/allorders" element={<AllOrders />} />
-      <Route path="/payment/verify" element={<PaymentStatus />} />
+      <Route path="/payment-success" element={<PaymentSuccess />} />
     </Route>
   )
 );

@@ -1,19 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { useSelector } from "react-redux";
 
 const FeaturedProducts = () => {
   const [products, setProducts] = useState([]);
-  const token = JSON.parse(localStorage.getItem("userInfo")).token;
+  // const token = JSON.parse(localStorage.getItem("userInfo")).token;
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/product", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await axios.get(
+          "http://localhost:5000/api/product"
+          // , {
+          //   headers: {
+          //     Authorization: `Bearer ${token}`,
+          //   },
+          //   }
+        );
         //this is used to sort the products randomly
         const shuffled = res.data.sort(() => 0.5 - Math.random());
 
@@ -27,7 +29,7 @@ const FeaturedProducts = () => {
     };
 
     fetchProducts();
-  }, [token]);
+  }, []);
 
   return (
     <div className="text-white">

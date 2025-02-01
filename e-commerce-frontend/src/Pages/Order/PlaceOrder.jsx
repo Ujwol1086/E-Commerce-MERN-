@@ -55,8 +55,8 @@ const PlaceOrder = () => {
     } catch (error) {
       toast.error("Payment Error:", error.message);
     }
-    localStorage.removeItem("cartItems");
-    localStorage.removeItem("shippingDetails");
+    // localStorage.removeItem("cartItems");
+    // localStorage.removeItem("shippingDetails");
   };
 
   return (

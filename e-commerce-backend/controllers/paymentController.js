@@ -84,7 +84,7 @@ export const initializePayment = async (req, res) =>
         await newOrder.save();
 
         const payload = {
-            return_url: "http://localhost:5000/api/payment/verify",
+            return_url: "http://localhost:5173/payment-success",
             website_url: "http://localhost:5000",
             amount: totalAmount,
             purchase_order_id: newOrder.purchase_order_id,
@@ -147,7 +147,7 @@ export const verifyPayment = async (req, res) =>
         {
             return res.status(400).json({ message: "Payment token is required" });
         }
-
+        console.log("Received pidx:", pidx);
         const payload = {
             pidx,
         };
@@ -156,27 +156,30 @@ export const verifyPayment = async (req, res) =>
             Authorization: `Key ${process.env.KHALTI_KEY}`,
             "Content-Type": "application/json",
         };
+        console.log("Payload:", payload);
+        console.log("Headers:", header);
         const response = await axios.post(
             "https://a.khalti.com/api/v2/payment/verify/",
             payload,
             { headers: header }
         );
+
+        console.log("Khalti API Response:", response.data);
+
         if (response.status === 200)
-        {
+        {   
             const responseData = response.data;
             const order = await Order.findOne({ payment_token: pidx });
-            // console.log(order);
+            console.log(order);
             if (!order)
             {
                 return res.status(404).json({ message: "Order not found" });
             }
             order.paymentStatus = "completed";
             await order.save();
+            console.log(order);
 
-            return res.status(200).json({
-                message: "Payment successful",
-                success: true,
-            });
+            return res.redirect("http://localhost:3000/home?status=success");
         }
         return res.status(response.status).json({ message: response.data });
     } catch (e)
