@@ -145,12 +145,13 @@ export const verifyPayment = async (req, res) =>
     try
     {
         const { pidx } = req.query;
+
         if (!pidx)
         {
             return res.status(400).json({ message: "Payment token is required" });
         }
 
-        // console.log("Received pidx:", pidx);
+        console.log("Received pidx:", pidx);
 
         const order = await Order.findOne({ payment_token: pidx });
         if (!order)
