@@ -161,7 +161,7 @@ export const verifyPayment = async (req, res) =>
         // console.log("Order found:", order);
 
         const payload = {
-            token: `${pidx}`,
+            token: pidx,
             amount: order.amount,
         };
 
@@ -170,7 +170,7 @@ export const verifyPayment = async (req, res) =>
             "Content-Type": "application/json",
         };
 
-        // console.log("Payload:", payload);
+        console.log("Payload:", payload);
         // console.log("Headers:", header);
 
         const response = await axios.post(
