@@ -180,7 +180,7 @@ export const verifyPayment = async (req, res) =>
             { headers: header }
         );
 
-        console.log("Khalti API Response:", response.data);
+        console.log("Khalti API Response:", response);
 
         if (response.status === 200)
         {

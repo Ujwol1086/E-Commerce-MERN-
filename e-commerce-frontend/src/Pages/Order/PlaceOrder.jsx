@@ -28,6 +28,7 @@ const PlaceOrder = () => {
           product: item._id,
           quantity: item.quantity,
         })),
+        
         firstName: shipping.firstName,
         lastName: shipping.lastName,
         email: shipping.email,
