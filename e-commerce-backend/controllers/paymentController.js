@@ -1,11 +1,11 @@
-// implement the khalti api in this
 import axios from "axios";
-import Order from "../models/OrderModel.js";
-import Product from "../models/productModel.js";
-import jwt from "jsonwebtoken";
-import UserToken from "../models/usertokenModel.js";
-import OrderItem from "../models/OrderItemModel.js";
 import request from "request";
+import jwt from "jsonwebtoken";
+
+import Order from "../models/OrderModel.js";
+import OrderItem from "../models/orderItemModel.js";
+import Product from "../models/productModel.js";
+import UserToken from "../models/usertokenModel.js";
 
 export const initializePayment = async (req, res) =>
 {
@@ -16,21 +16,13 @@ export const initializePayment = async (req, res) =>
         {
             return res.status(401).json({ message: "No authorization header found" });
         }
-
         const token = tokenHeader.split(" ")[1];
         const isTokenExists = await UserToken.findOne({ jwt: token });
         if (!isTokenExists)
         {
             return res.status(401).json({ message: "Access Denied. Please login." });
         }
-
         const decoded = jwt.verify(token, process.env.JWT);
-        const user = await UserToken.findOne({ userId: decoded.id });
-        // console.log(user);
-        if (!user)
-        {
-            return res.status(404).json({ message: "User not found" });
-        }
 
         const {
             items,
@@ -45,8 +37,8 @@ export const initializePayment = async (req, res) =>
             shippingCost,
         } = req.body;
 
+        // Calculate total amount in the base currency
         let totalAmount = 0;
-
         for (const item of items)
         {
             const product = await Product.findById(item.product);
@@ -56,40 +48,36 @@ export const initializePayment = async (req, res) =>
             }
             totalAmount += product.price * item.quantity;
 
+            // Create an order item document (extra fields removed to match schema)
             const orderItem = new OrderItem({
-                product: [item.product],
-                firstName,
-                lastName,
-                email,
-                shippingAddress,
-                city,
-                phone,
-                zipcode,
+                product: item.product,
                 quantity: item.quantity,
                 user: decoded.id,
-                amount: totalAmount,
             });
             await orderItem.save();
         }
 
-        totalAmount += taxAmount + shippingCost;
+        // Add tax & shipping cost (if provided)
+        totalAmount += (taxAmount || 0) + (shippingCost || 0);
 
-        totalAmount *= 100;
+        // Convert to paisa (smallest currency unit)
+        const totalAmountInPaisa = totalAmount * 100;
 
+        // Create a new Order in DB
         const newOrder = new Order({
             user: decoded.id,
-            paymentStatus: "pending",
-            purchase_order_id: `Order-${Date.now()}`,
-            payment_token: "",
-            amount: totalAmount,
+            paymentStatus: "Pending", // Updated from "pending" to "Pending"
+            payment_token: "", // will update after Khalti response
+            amount: totalAmountInPaisa,
         });
         await newOrder.save();
 
+        // Build payload for Khalti ePayment initiation with purchase_order_id included
         const payload = {
             return_url: "http://localhost:5173/payment-success",
             website_url: "http://localhost:5000",
-            amount: totalAmount,
-            purchase_order_id: newOrder.purchase_order_id,
+            amount: totalAmountInPaisa,
+            purchase_order_id: `ORDER_${newOrder._id}`, // Required field added here
             purchase_order_name: `Order-${newOrder._id}`,
             customer_info: {
                 name: `${firstName} ${lastName}`,
@@ -98,6 +86,7 @@ export const initializePayment = async (req, res) =>
             },
         };
 
+        // Options for request to Khalti
         const options = {
             method: "POST",
             url: "https://a.khalti.com/api/v2/epayment/initiate/",
@@ -108,6 +97,7 @@ export const initializePayment = async (req, res) =>
             body: JSON.stringify(payload),
         };
 
+        // Make request to Khalti
         request(options, async (error, response) =>
         {
             if (error)
@@ -120,17 +110,20 @@ export const initializePayment = async (req, res) =>
             {
                 const responseData = JSON.parse(response.body);
 
+                // Save the Khalti payment token (pidx) in the Order
                 newOrder.payment_token = responseData.pidx;
                 await newOrder.save();
 
                 return res.status(200).json({
                     pidx: responseData.pidx,
                     payment_url: responseData.payment_url,
-                    message: "Pyament successful",
+                    message: "Payment initiated. Redirect user to payment_url.",
                 });
             } else
             {
-                return res.status(response.statusCode).json({ message: response.body });
+                return res
+                    .status(response.statusCode)
+                    .json({ message: response.body });
             }
         });
     } catch (e)
@@ -140,68 +133,52 @@ export const initializePayment = async (req, res) =>
     }
 };
 
+
 export const verifyPayment = async (req, res) =>
 {
     try
     {
         const { pidx } = req.query;
-
         if (!pidx)
         {
-            return res.status(400).json({ message: "Payment token is required" });
+            // Redirect to frontend with failure status if no pidx is provided
+            return res.redirect("http://localhost:5173/?status=failed");
         }
-
-        console.log("Received pidx:", pidx);
 
         const order = await Order.findOne({ payment_token: pidx });
         if (!order)
         {
-            return res.status(404).json({ message: "Order not found" });
+            return res.redirect("http://localhost:5173/?status=failed");
         }
 
-        // console.log("Order found:", order);
-
-        const payload = {
-            token: pidx,
-            amount: order.amount,
-        };
-
-        const header = {
+        const headers = {
             Authorization: `Key ${process.env.KHALTI_KEY}`,
             "Content-Type": "application/json",
         };
 
-        console.log("Payload:", payload);
-        // console.log("Headers:", header);
-
         const response = await axios.post(
-            "https://a.khalti.com/api/v2/payment/verify/",
-            payload,
-            { headers: header }
+            "https://a.khalti.com/api/v2/epayment/lookup/",
+            { pidx },
+            { headers }
         );
 
-        console.log("Khalti API Response:", response);
-
-        if (response.status === 200)
+        if (response.status === 200 && response.data.status === "Completed")
         {
-            const responseData = response.data;
-            const order = await Order.findOne({ payment_token: pidx });
-            console.log(order);
-            if (!order)
-            {
-                return res.status(404).json({ message: "Order not found" });
-            }
-            order.paymentStatus = "completed";
+            order.paymentStatus = "Completed";
             await order.save();
+            // console.log("Payment verified! Redirecting...");
             // console.log(order);
+            return res.redirect("http://localhost:5173/payment-success");
+        } else
+        {
 
-            return res.redirect("http://localhost:3000/home?status=success");
+            console.log("Payment verification failed. Redirecting...");
+            return res.redirect("http://localhost:5173/?status=failed");
         }
-        return res.status(response.status).json({ message: response.data });
     } catch (error)
     {
-        // res.status(400).json({ message: e.message });
+        console.log(error);
         console.error("Khalti API Error:", error.response?.data || error.message);
-        res.status(400).json({ success: false, message: "Payment verification failed", error: error.response?.data });
+        return res.redirect("http://localhost:5173/?status=failed");
     }
 };
