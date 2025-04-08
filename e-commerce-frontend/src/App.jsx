@@ -2,6 +2,8 @@ import { Outlet } from "react-router-dom";
 import Navigation from "./Pages/Auth/Navigation";
 import { useState } from "react";
 import { ToastContainer } from "react-toastify";
+import { SearchProvider } from "./Context/SearchContext";
+import SearchResults from "./Pages/SearchResults";
 
 function App() {
   const [userInfo, setUserInfo] = useState(
@@ -9,11 +11,13 @@ function App() {
   );
   return (
     <>
-      <ToastContainer />
-      <Navigation userInfo={userInfo} />
-      <main className="ml-20">
-        <Outlet context={{ setUserInfo }} />
-      </main>
+      <SearchProvider>
+        <ToastContainer />
+        <Navigation userInfo={userInfo} />
+        <main className="ml-20">
+          <Outlet context={{ setUserInfo }} />
+        </main>
+      </SearchProvider>
     </>
   );
 }

@@ -6,6 +6,7 @@ import {
   AiOutlineUserAdd,
   AiOutlineShoppingCart,
   AiOutlineUser,
+  AiOutlineSearch,
 } from "react-icons/ai";
 import {
   MdAdminPanelSettings,
@@ -13,13 +14,19 @@ import {
   MdArrowDropDown,
 } from "react-icons/md";
 import { FaRegHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Navigation.css";
+import axios from "axios";
+import { useSearch } from "../../Context/SearchContext";
 
 const Navigation = ({ userInfo }) => {
   const [showSidebar, setShowSidebar] = useState(false);
   // const [userInfo, setUserInfo] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
+
+  const navigate = useNavigate();
+  const { updateSearchResults, updateSearchQuery } = useSearch();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogOut = async () => {
     localStorage.removeItem("userInfo");
@@ -36,6 +43,27 @@ const Navigation = ({ userInfo }) => {
   };
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchQuery.trim()) return;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/product/search?name=${encodeURIComponent(
+          searchQuery
+        )}`
+      );
+      if (response.data) {
+        updateSearchResults(response.data);
+        updateSearchQuery(searchQuery);
+        navigate("/search-results");
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      // You might want to show a toast notification here
+    }
   };
 
   return (
@@ -71,6 +99,7 @@ const Navigation = ({ userInfo }) => {
           <span className="hidden nav-item-name mt-[3rem]">Cart</span>
           {""}
         </Link>
+
         <Link
           to="/favorite"
           className="flex items-center transition-transform transform hover:translate-x-2"
@@ -80,6 +109,23 @@ const Navigation = ({ userInfo }) => {
           {""}
         </Link>
       </div>
+
+      <form
+        onSubmit={handleSearch}
+        className="hidden nav-item-name md:flex items-center bg-white rounded-full px-4 py-2 w-1/3 "
+      >
+        <AiOutlineSearch
+          className="text-gray-500 hidden nav-item-name"
+          size={10}
+        />
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full outline-none text-black px-2"
+        />
+      </form>
 
       <div>
         {userInfo ? (
