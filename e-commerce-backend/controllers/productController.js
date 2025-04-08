@@ -1,5 +1,6 @@
 import Product from "./../models/productModel.js";
 import fs from "fs";
+import path from "path";
 
 const addProduct = async (req, res) =>
 {
@@ -19,14 +20,14 @@ const addProduct = async (req, res) =>
             category,
             productImage: image,
             stock,
-        })
+        });
         await newProduct.save();
         res.send(newProduct);
     } catch (e)
     {
         res.status(400).json({ message: e.message });
     }
-}
+};
 const searchProductByTitle = async (req, res) =>
 {
     const { name } = req.query;
@@ -49,33 +50,94 @@ const searchProductByTitle = async (req, res) =>
         res.status(400).json({ message: e.message });
     }
 };
+// Original
+// const updateProductDetails = async (req, res) => {
+//   try {
+//     console.log("Incoming update request:", req.body);
+//     const products = await Product.findByIdAndUpdate(req.params.id, req.body, {
+//       new: true,
+//     });
+//     if (!products) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+//     if (req.file) {
+//       const product = await Product.findById(req.params.id);
+//       if (product.productImage) {
+//         fs.unlinkSync(product.productImage);
+//       }
+//       products.productImage = req.file.path;
+//       await products.save();
+//     }
+//     res.status(202).json(products);
+//   } catch (e) {
+//     res.status(400).json({ message: e.message });
+//   }
+// };
+
+// Updated
 const updateProductDetails = async (req, res) =>
 {
+    console.log("Incoming update request:", req.body);
+    console.log("Incoming file:", req.file);
+
     try
     {
-        const products = await Product.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-        });
-        if (!products)
+        const { id } = req.params;
+        const { name, description, price, stock, category } = req.body;
+
+        // Validate required fields
+        if (!name || !description || !price || !stock || !category)
+        {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        let product = await Product.findById(id);
+        if (!product)
         {
             return res.status(404).json({ message: "Product not found" });
         }
+
+        // Update product fields
+        product.name = name;
+        product.description = description;
+        product.price = Number(price);
+        product.stock = Number(stock);
+        product.category = category;
+
+        // Handle image update
         if (req.file)
         {
-            const product = await Product.findById(req.params.id);
+            // Delete old image if it exists
             if (product.productImage)
             {
-                fs.unlinkSync(product.productImage);
+                const oldImagePath = path.join(process.cwd(), product.productImage);
+                if (fs.existsSync(oldImagePath))
+                {
+                    fs.unlinkSync(oldImagePath);
+                }
             }
-            products.productImage = req.file.path;
-            await products.save();
+            product.productImage = `/uploads/${req.file.filename}`;
         }
-        res.status(202).json(products);
-    } catch (e)
+
+        // Validate the updated product
+        try
+        {
+            await product.validate();
+        } catch (validationError)
+        {
+            return res.status(400).json({ message: validationError.message });
+        }
+
+        await product.save();
+        console.log("Updated product:", product);
+        res.status(200).json({ message: "Product updated successfully", product });
+    } catch (error)
     {
-        res.status(400).json({ message: e.message });
+        console.error("Update error:", error);
+        res.status(500).json({ message: error.message || "Internal Server Error" });
     }
 };
+
 const removeProduct = async (req, res) =>
 {
     try
@@ -86,7 +148,7 @@ const removeProduct = async (req, res) =>
     {
         res.status(400).json({ message: e.message });
     }
-}
+};
 const removeProductById = async (req, res) =>
 {
     try
@@ -169,5 +231,5 @@ export
     fetchProductById,
     searchProductByTitle,
     getProductsByCategory,
-    removeProductById
-}
+    removeProductById,
+};

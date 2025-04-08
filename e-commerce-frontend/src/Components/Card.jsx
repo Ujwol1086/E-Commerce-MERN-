@@ -9,20 +9,17 @@ const Card = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/product"
-          // , {
-          //   headers: {
-          //     Authorization: `Bearer ${token}`,
-          //   },
-          //   }
-        );
+        const res = await axios.get("http://localhost:5000/api/product", {
+          // headers: {
+          //   Authorization: `Bearer ${token}`,
+          // },
+        });
         // const category = await axios.get("http://localhost:5000/api/category", {
         //   headers: {
         //     Authorization: `Bearer ${token}`,
         //   },
         // });
-        //sort product randomly
+        // sort product randomly
         const shuffledProduct = res.data.sort(() => 0.5 - Math.random());
         setProducts(shuffledProduct);
       } catch (error) {
@@ -55,7 +52,7 @@ const Card = () => {
             </Link>
             <div className="flex items-center mt-2 mb-4">
               <span className="font-medium text-gray-500 dark:text-gray-400">
-                {product.category.name}
+                {product.category?.name || "Unknown Category"}
               </span>
             </div>
             <div className="flex items-center justify-between gap-10">

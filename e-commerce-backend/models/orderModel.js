@@ -15,7 +15,7 @@ const orderSchema = new mongoose.Schema(
         paymentMethod: {
             type: String,
             enum: ["Khalti", "Cash on Delivery"],
-            default: "Cash on Delivery",
+            default: "Khalti",
         },
         khalti_pidx: {
             type: String,
@@ -38,6 +38,10 @@ const orderSchema = new mongoose.Schema(
             required: true,
             default: 0,
         },
+        items: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "OrderItem"
+        }]
     },
     { timestamps: true }
 );

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 const AllProducts = () => {
   const [products, setProducts] = useState([]);
@@ -32,7 +33,7 @@ const AllProducts = () => {
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product.id}>
+              <tr key={product._id}>
                 <td className="p-2 w-32 h-20 ">
                   <img
                     src={`http://localhost:5000/${product.productImage}`}
@@ -42,7 +43,12 @@ const AllProducts = () => {
                 <td>{product.name}</td>
                 <td>{product.price}</td>
                 <td className="space-x-10">
-                  <button className="bg-pink-500 p-2 rounded">Edit</button>
+                  <Link
+                    to={`/edit-product/${product._id}`}
+                    className="bg-pink-500 p-2 rounded"
+                  >
+                    Edit
+                  </Link>
                   <button className="bg-red-500 p-2 rounded">Delete</button>
                 </td>
               </tr>
